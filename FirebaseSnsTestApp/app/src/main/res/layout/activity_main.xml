@@ -11,10 +11,11 @@
             android:text="로그인"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp" android:id="@+id/login" app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="8dp" android:layout_marginRight="8dp" app:layout_constraintHorizontal_bias="0.0"
-            android:layout_marginBottom="396dp" app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/login" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="396dp" app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginEnd="200dp" android:layout_marginRight="200dp" android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"/>
     <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -39,33 +40,58 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/signup" app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp" android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="200dp"
+            android:layout_marginRight="200dp" android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@+id/login" android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintVertical_bias="0.006"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.0"/>
     <Button
             android:text="상태"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/status" app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp" android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="200dp"
+            android:layout_marginRight="200dp" android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@+id/signup"/>
     <Button
             android:text="이메일유효성검사"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/verifyemail" app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp" android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="200dp"
+            android:layout_marginRight="200dp" android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@+id/status"/>
     <Button
             android:text="탈퇴"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/delete" app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="200dp"
+            android:layout_marginRight="200dp" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/verifyemail"/>
+    <Button
+            android:text="구글로그인"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/googleLogin" app:layout_constraintStart_toEndOf="@+id/login"
+            android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp" android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/verifyemail"/>
+            app:layout_constraintTop_toBottomOf="@+id/password"/>
+    <Button
+            android:text="페이스북로그인"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/fbLogin" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp" app:layout_constraintStart_toEndOf="@+id/signup"
+            android:layout_marginLeft="8dp" android:layout_marginStart="8dp" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/googleLogin"/>
+    <Button
+            android:text="트위터로그인"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/twLogin" app:layout_constraintStart_toEndOf="@+id/status" android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/fbLogin"/>
 </android.support.constraint.ConstraintLayout>
