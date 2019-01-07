@@ -14,6 +14,7 @@ import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
@@ -23,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     private var authListener: FirebaseAuth.AuthStateListener? = null
     private var googleSignInClient: GoogleSignInClient? = null
     private var callbackManager: CallbackManager? = null
+    private var firestore: FirebaseFirestore? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +40,12 @@ class MainActivity : AppCompatActivity() {
                 println("로그아웃 또는 로그인이 안됐을 때")
             }
         }
+
+
+
+        // firestore
+        firestore = FirebaseFirestore.getInstance()
+
 
 
         // google
@@ -71,6 +79,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         status.setOnClickListener {
+            saveData()
+
             println("${auth?.currentUser?.displayName} ${auth?.currentUser?.email} ${auth?.currentUser?.isEmailVerified} ")
         }
 
@@ -92,6 +102,109 @@ class MainActivity : AppCompatActivity() {
 
         twLogin.setOnClickListener {
             twitterSignIn()
+        }
+
+        pullDriven.setOnClickListener {
+            // Collection과 DocumentId를 이미 알고있는 경우
+            // ex) 상세보기 페이지
+            firestore?.collection("User")?.document(auth?.currentUser?.email!!)?.get()
+                ?.addOnCompleteListener { task ->
+                    if(task.isSuccessful) {
+                        val user = task.result?.toObject(User::class.java)
+                        println("${user?.address} ${user?.phoneNumber} 데이터 가져옴")
+                    }
+                }
+
+            // query방식
+            // 1. WhereEqualTo
+            // sql where을 쓴것처럼 사용한다. 정확하게 일치하는 경우에만 검색된다.
+            // LIKE 와 같은 검색은 안드로이드 내부에서 직접 구현해야함
+            firestore?.collection("User")?.whereEqualTo("address", "SEOUL")?.get()
+                ?.addOnCompleteListener { task ->
+                    if(task.isSuccessful) {
+                        for(ds in task.result?.documents!!) {
+                            val user = ds.toObject(User::class.java)
+                            println("${user?.address} ${user?.phoneNumber} 데이터 가져옴")
+                        }
+                    }
+                }
+
+            // 2. WhereGreaterThan
+            // 입력된 값보다 초과되는 값만 검색된다
+            firestore?.collection("User")?.whereGreaterThan("age", 25)?.get()
+                ?.addOnCompleteListener { task ->
+                    if(task.isSuccessful) {
+                        for(ds in task.result?.documents!!) {
+                            val user = ds.toObject(User::class.java)
+                            println("${user?.address} ${user?.phoneNumber} 데이터 가져옴")
+                        }
+                    }
+                }
+
+            // 3. WhereGreaterThanOrEqualTo
+            // 입력된 값 이상인 값들만 검색
+
+            // 4. WhereLessThan
+            // 입력된 값 미만 데이터 검색
+
+            // 5. WhereLessThanOrEqualTo
+            // 입력된 값 이하 데이터 검색
+        }
+
+        pushDriven.setOnClickListener {
+            // 데이터가 변경될때마다 트리거 동작
+            // ex) 채팅, 리스트 뷰 등
+
+            // DocumentSnapshot
+            // document id에 해당되는 document의 변화를 감지하는 것이 아닌 collection에 포함된 모든 document들을 감지하고있어서
+            // document들중 한개라도 변경되면 모든 document를 다시 받는다. 과연 이 케이스는 언제 쓸수있을까? 예를들어 새로고침?
+            //
+            // DocumentChanges
+            // document id에 해당되는 document만 감지한다
+            //
+            firestore?.collection("User")?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+                val dcRef = querySnapshot?.documentChanges
+                for((count, ds) in dcRef!!.withIndex()) {
+                    val user = ds.document.toObject(User::class.java)
+                    println("#$count ${user.address} ${user.phoneNumber}")
+                }
+            }
+
+            firestore?.collection("User")?.whereEqualTo("address", "SEOUL")
+                ?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+                    for(dc in querySnapshot?.documentChanges!!) {
+                        val user = dc.document.toObject(User::class.java)
+                        println("PullDriven WhereEqualTo ${user.address} ${user.phoneNumber}")
+                    }
+                }
+        }
+    }
+
+
+    private fun saveData() {
+        /**
+         * runTransaction은 여러 사용자가 FireStore에 접근하여 데이터를 변경하려고할 때 현재 변경중일 경우 락을 걸어서 다른 사용자가 대기하도록 한다.
+         * 중복쓰기방지를 위해 사용한다.  collection-document 객체를 받아서 transaction을 통해 data 객체를 얻은 뒤 값을 변경해서 저장한다.
+         */
+
+        val userRef = firestore?.collection("User")?.document(auth?.currentUser?.email!!)
+        firestore?.runTransaction {  transaction ->
+            val user = transaction.get(userRef!!).toObject(User::class.java)
+            println("address : ${user?.address}  phoneNumber ${user?.phoneNumber}  age ${user?.age}")
+
+            user?.phoneNumber = "01077771123"
+            transaction.set(userRef, user!!)
+        }
+
+        val googleUserRef = firestore?.collection("User")?.document("rlawlgns077@gmail.com")
+        firestore?.runTransaction { transition ->
+            var googleUser = transition.get(googleUserRef!!).toObject(User::class.java)
+
+            if(googleUser == null) {
+                googleUser = User("SEOUL", "01077716565", 25)
+            }
+
+            transition.set(googleUserRef, googleUser) // set 해줘야 Firestore에 반영됨
         }
     }
 
@@ -172,6 +285,9 @@ class MainActivity : AppCompatActivity() {
                     // id 생성이 완료
                     val user = auth?.currentUser
                     println(user)
+
+                    val u = User("LA", null, 30)
+                    firestore?.collection("User")?.document(auth?.currentUser?.email!!)?.set(u)
                 } else {
                     // id 생성이 실패
                     print(task.exception.toString())
