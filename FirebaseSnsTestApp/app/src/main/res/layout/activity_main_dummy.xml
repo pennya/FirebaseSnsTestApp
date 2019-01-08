@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="vertical"
+                  android:focusable="true"
+                  android:focusableInTouchMode="true" >
+
+        <Button
+                android:text="로그인"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/login"/>
+        <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:ems="10"
+                android:id="@+id/email"
+                android:text="rlawlgns077@naver.com"/>
+        <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:ems="10"
+                android:id="@+id/password"
+                android:text="11111111"/>
+        <Button
+                android:text="회원가입"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/signup"/>
+        <Button
+                android:text="상태"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/status"/>
+        <Button
+                android:text="이메일유효성검사"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/verifyemail"/>
+        <Button
+                android:text="탈퇴"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/delete2"/>
+        <Button
+                android:text="구글로그인"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/googleLogin"/>
+        <Button
+                android:text="페이스북로그인"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/fbLogin" />
+        <Button
+                android:text="트위터로그인"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/twLogin" />
+        <Button
+                android:text="Pull Driven"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/pullDriven" />
+        <Button
+                android:text="Push Driven"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/pushDriven" />
+        <Button
+                android:text="Modify"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/modify"/>
+        <Button
+                android:text="Delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/delete" />
+        <Button
+                android:text="업로드"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/upload"/>
+        <Button
+                android:text="다운로드"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/download"/>
+        <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" tools:srcCompat="@tools:sample/avatars[1]"
+                android:id="@+id/imageView"/>
+    </LinearLayout>
+</ScrollView>

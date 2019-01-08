@@ -1,4 +1,4 @@
-package com.duzi.duzisnstest
+package com.duzi.duzisnstest.dummy
 
 data class User(
     var address: String? = null,
