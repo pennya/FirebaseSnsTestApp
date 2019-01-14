@@ -14,6 +14,7 @@ import com.duzi.duzisnstest.MainActivity
 import com.duzi.duzisnstest.R
 import com.duzi.duzisnstest.model.ContentDTO
 import com.duzi.duzisnstest.model.FollowDTO
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
@@ -58,11 +59,14 @@ class DetailviewFragment : Fragment() {
 
         init {
             val uid = FirebaseAuth.getInstance().currentUser?.uid
+
+            // pull driven 방식으로 users 컬렉션에서 uid에 해당하는 문서를 찾아온다.
             firestore?.collection("users")?.document(uid!!)?.get()
                 ?.addOnCompleteListener { task ->
                     if(task.isSuccessful) {
                         val userDTO = task.result?.toObject(FollowDTO::class.java)
                         if(userDTO?.followings != null) {
+                            // 내가 구독하고있는 사람들의 리스트를 보여준다
                            getContents(userDTO.followings)
                         }
                     }
@@ -70,11 +74,14 @@ class DetailviewFragment : Fragment() {
         }
 
         private fun getContents(followers: MutableMap<String, Boolean>?) {
+            // images 컬렉션에서 timestamp 순으로 정렬하여 보여준다.
             imagesSnapshot = firestore?.collection("images")?.orderBy("timestamp")
                 ?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                     contentDTOs.clear()
                     contentUidList.clear()
                     if(querySnapshot == null) return@addSnapshotListener
+
+                    // 모든 글을 가져와서 내가 팔로잉한 사람들의 글을 보여준다.
                     for(snapshot in querySnapshot.documents) {
                         val item = snapshot.toObject(ContentDTO::class.java)!!
                         println(item.uid)
@@ -99,6 +106,8 @@ class DetailviewFragment : Fragment() {
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val viewHolder = (holder as CustomViewHolder).itemView
 
+            // 회원가입을 하면서 프로필 등록하면 profileImages 컬렉션에 저장이 됨.
+            // profileImages 컬렉션에 저장된 유저의 이미지를 가져온다
             firestore?.collection("profileImages")?.document(contentDTOs[position].uid!!)
                 ?.get()?.addOnCompleteListener { task ->
                     if(task.isSuccessful) {
@@ -110,6 +119,7 @@ class DetailviewFragment : Fragment() {
                     }
                 }
 
+            // 프로필 이미지를 클릭하면 유저 정보 페이지로 이동한다
             viewHolder.detailviewitem_profile_image.setOnClickListener {
                 val fragment = UserFragment()
                 val bundle = Bundle()
@@ -133,6 +143,8 @@ class DetailviewFragment : Fragment() {
                 favoriteEvent(position)
             }
 
+
+
             if(contentDTOs[position].favorites.containsKey(FirebaseAuth.getInstance().currentUser!!.uid)) {
                 viewHolder.detailviewitem_favorite_imageview.setImageResource(R.drawable.ic_favorite)
             } else {
@@ -148,14 +160,23 @@ class DetailviewFragment : Fragment() {
                 val uid = FirebaseAuth.getInstance().currentUser!!.uid
                 val contentDTO = transaction.get(tsDoc!!).toObject(ContentDTO::class.java)
 
+                // 글에서 유저가 좋아요 누른것을 map으로 관리
                 if(contentDTO!!.favorites.containsKey(uid)) {
                     contentDTO.favoriteCount = contentDTO.favoriteCount - 1
                     contentDTO.favorites.remove(uid)
+
+                    contentDTOs[position].favoriteCount = contentDTOs[position].favoriteCount - 1
+                    contentDTOs[position].favorites.remove(uid)
                 } else {
                     contentDTO.favoriteCount = contentDTO.favoriteCount + 1
                     contentDTO.favorites[uid] = true
+
+                    contentDTOs[position].favoriteCount = contentDTOs[position].favoriteCount + 1
+                    contentDTOs[position].favorites[uid] = true
                 }
                 transaction.set(tsDoc, contentDTO)
+            }?.addOnSuccessListener {
+                notifyItemChanged(position)
             }
         }
 

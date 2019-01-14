@@ -33,6 +33,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         toolbar_title_image.visibility = View.VISIBLE
         toolbar_btn_back.visibility = View.GONE
         toolbar_username.visibility = View.GONE
+
+        println("current timestamp = ${System.currentTimeMillis()}")
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
