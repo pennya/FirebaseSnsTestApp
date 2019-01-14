@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="@string/home" android:id="@+id/action_home" android:icon="@drawable/ic_home"
+          android:enabled="true"/>
+    <item android:title="@string/search" android:id="@+id/action_search" android:enabled="true"
+          android:icon="@drawable/ic_search"/>
+    <item android:title="@string/gallery" android:id="@+id/action_add_photo" android:enabled="true"
+          android:icon="@drawable/ic_add_a_photo"/>
+    <item android:title="@string/favorite" android:id="@+id/action_favorite_alarm" android:enabled="true"
+          android:icon="@drawable/ic_favorite_border"/>
+    <item android:title="@string/account" android:id="@+id/action_account" android:enabled="true"
+          android:icon="@drawable/ic_account"/>
+</menu>
