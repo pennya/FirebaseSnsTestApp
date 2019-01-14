@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import com.duzi.duzisnstest.navigation.*
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -28,7 +29,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
     }
 
-    fun setToolbarDefault() {
+    private fun setToolbarDefault() {
         toolbar_title_image.visibility = View.VISIBLE
         toolbar_btn_back.visibility = View.GONE
         toolbar_username.visibility = View.GONE

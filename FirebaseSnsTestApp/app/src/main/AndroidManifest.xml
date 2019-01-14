@@ -43,7 +43,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AddPhotoActivity"></activity>
+        <activity android:name=".navigation.AddPhotoActivity"></activity>
     </application>
 
 </manifest>
