@@ -37,6 +37,11 @@ class GridFragment : Fragment() {
         gridfragment_recyclerview.layoutManager = GridLayoutManager(activity, 3)
     }
 
+    override fun onStop() {
+        super.onStop()
+        if(::imagesSnapshot.isInitialized) imagesSnapshot.remove()
+    }
+
     inner class GridFragmentRecyclerViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         val contentDTOs: ArrayList<ContentDTO> = arrayListOf()
