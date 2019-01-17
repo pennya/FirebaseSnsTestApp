@@ -3,7 +3,7 @@
     package="com.duzi.duzisnstest">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -34,8 +34,8 @@
         </activity>
         <activity
             android:name=".dummy.MainActivity"
-            android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity android:name=".MainActivity"></activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity android:name=".MainActivity" />
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -43,7 +43,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".navigation.AddPhotoActivity"></activity>
+        <activity android:name=".navigation.AddPhotoActivity" />
+        <activity android:name=".navigation.CommentActivity"></activity>
     </application>
 
 </manifest>

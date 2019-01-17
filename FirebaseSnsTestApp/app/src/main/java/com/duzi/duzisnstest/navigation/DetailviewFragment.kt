@@ -1,6 +1,7 @@
 package com.duzi.duzisnstest.navigation
 
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -59,6 +60,7 @@ class DetailviewFragment : Fragment() {
 
         init {
             val uid = FirebaseAuth.getInstance().currentUser?.uid
+            println("uid : $uid")
 
             // pull driven 방식으로 users 컬렉션에서 uid에 해당하는 문서를 찾아온다.
             firestore?.collection("users")?.document(uid!!)?.get()
@@ -152,6 +154,12 @@ class DetailviewFragment : Fragment() {
             }
 
             viewHolder.detailviewitem_favoritecounter_textview.text = "좋아요 ${contentDTOs[position].favoriteCount} 개"
+
+            viewHolder.detailviewitem_comment_imageview.setOnClickListener {
+                val intent = Intent(activity, CommentActivity::class.java)
+                intent.putExtra("contentUid", contentUidList[position])
+                startActivity(intent)
+            }
         }
 
         private fun favoriteEvent(position: Int) {
