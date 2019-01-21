@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.duzi.duzisnstest.R
+import com.duzi.duzisnstest.model.AlarmDTO
 import com.duzi.duzisnstest.model.ContentDTO
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -47,6 +48,7 @@ class CommentActivity : AppCompatActivity() {
                 .document()
                 .set(comment)
 
+            commentAlarm(destinationUid!!, comment_edit_message.text.toString())
             comment_edit_message.setText("")
         }
 
@@ -59,6 +61,17 @@ class CommentActivity : AppCompatActivity() {
         commentSnapshot?.remove()
     }
 
+    private fun commentAlarm(destinationUid: String, message: String) {
+        val alarmDTO = AlarmDTO()
+        alarmDTO.destinationUid = destinationUid
+        alarmDTO.userId = user?.email
+        alarmDTO.uid = user?.uid
+        alarmDTO.kind = 1 // 댓글 알림
+        alarmDTO.message = message
+        alarmDTO.timestamp = System.currentTimeMillis()
+
+        FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
+    }
 
     inner class CommentRecyclerAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 

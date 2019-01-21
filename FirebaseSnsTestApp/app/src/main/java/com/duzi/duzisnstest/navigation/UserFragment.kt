@@ -24,6 +24,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.duzi.duzisnstest.LoginActivity
 import com.duzi.duzisnstest.MainActivity
 import com.duzi.duzisnstest.R
+import com.duzi.duzisnstest.model.AlarmDTO
 import com.duzi.duzisnstest.model.ContentDTO
 import com.duzi.duzisnstest.model.FollowDTO
 import com.google.firebase.auth.FirebaseAuth
@@ -233,6 +234,7 @@ class UserFragment : Fragment() {
                 } else {
                     followingCount += 1
                     followings[uid.toString()] = true
+                    followerAlarm(uid!!)
                 }
                 transaction.set(tsDocFollowing, this)
                 return@runTransaction
@@ -266,6 +268,18 @@ class UserFragment : Fragment() {
             }
         }
     }
+
+    private fun followerAlarm(destinationUid: String) {
+        val alarmDTO = AlarmDTO()
+        alarmDTO.destinationUid = destinationUid
+        alarmDTO.userId = auth.currentUser?.email
+        alarmDTO.uid = auth.currentUser?.uid
+        alarmDTO.kind = 2 // 팔로워알림
+        alarmDTO.timestamp = System.currentTimeMillis()
+
+        FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
+    }
+
 
 
 

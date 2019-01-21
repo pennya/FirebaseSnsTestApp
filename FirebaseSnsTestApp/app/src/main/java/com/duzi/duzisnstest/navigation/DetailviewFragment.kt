@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.duzi.duzisnstest.MainActivity
 import com.duzi.duzisnstest.R
+import com.duzi.duzisnstest.model.AlarmDTO
 import com.duzi.duzisnstest.model.ContentDTO
 import com.duzi.duzisnstest.model.FollowDTO
 import com.google.android.gms.tasks.OnSuccessListener
@@ -30,6 +31,7 @@ class DetailviewFragment : Fragment() {
     var user: FirebaseUser? = null
     var firestore: FirebaseFirestore? = null
     var imagesSnapshot: ListenerRegistration? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -96,6 +98,18 @@ class DetailviewFragment : Fragment() {
                 }
         }
 
+        private fun favoriteAlarm(destinationUid: String) {
+            val alarmDTO = AlarmDTO()
+            alarmDTO.destinationUid = destinationUid
+            alarmDTO.userId = user?.email
+            alarmDTO.uid = user?.uid
+
+            alarmDTO.kind = 0  // 좋아요
+            alarmDTO.timestamp = System.currentTimeMillis()
+
+            FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
+        }
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_detail, parent, false)
             return CustomViewHolder(view)
@@ -158,6 +172,7 @@ class DetailviewFragment : Fragment() {
             viewHolder.detailviewitem_comment_imageview.setOnClickListener {
                 val intent = Intent(activity, CommentActivity::class.java)
                 intent.putExtra("contentUid", contentUidList[position])
+                intent.putExtra("destinationUid", contentDTOs[position].uid)
                 startActivity(intent)
             }
         }
@@ -170,17 +185,18 @@ class DetailviewFragment : Fragment() {
 
                 // 글에서 유저가 좋아요 누른것을 map으로 관리
                 if(contentDTO!!.favorites.containsKey(uid)) {
-                    contentDTO.favoriteCount = contentDTO.favoriteCount - 1
+                    contentDTO.favoriteCount -= 1
                     contentDTO.favorites.remove(uid)
 
                     contentDTOs[position].favoriteCount = contentDTOs[position].favoriteCount - 1
                     contentDTOs[position].favorites.remove(uid)
                 } else {
-                    contentDTO.favoriteCount = contentDTO.favoriteCount + 1
+                    contentDTO.favoriteCount += 1
                     contentDTO.favorites[uid] = true
 
                     contentDTOs[position].favoriteCount = contentDTOs[position].favoriteCount + 1
                     contentDTOs[position].favorites[uid] = true
+                    favoriteAlarm(contentDTOs[position].uid!!)
                 }
                 transaction.set(tsDoc, contentDTO)
             }?.addOnSuccessListener {
