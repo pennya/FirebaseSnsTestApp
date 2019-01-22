@@ -21,6 +21,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.duzi.duzisnstest.FCMPush
 import com.duzi.duzisnstest.LoginActivity
 import com.duzi.duzisnstest.MainActivity
 import com.duzi.duzisnstest.R
@@ -43,6 +44,7 @@ class UserFragment : Fragment() {
 
     var uid: String? = null
     var currentUserUid: String? = null
+    var fcmPush: FCMPush? = null
 
     var followerListenerRegistration: ListenerRegistration? = null
     var followingListenerRegistration: ListenerRegistration? = null
@@ -62,9 +64,12 @@ class UserFragment : Fragment() {
 
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
+        fcmPush = FCMPush()
 
+        // 로그인된 사용자 uid
         currentUserUid = auth.currentUser?.uid
         if(arguments != null) {
+            // 상세보기할려고하는 유저의 uid
             uid = arguments?.getString("destinationUid")
 
             // 본인의 계정일 경우
@@ -76,6 +81,7 @@ class UserFragment : Fragment() {
                     auth.signOut()
                 }
             } else {
+                // 일단 내가 팔로우했는지 안했는지 상관없이 팔로우 출력
                 account_btn_follow_signout.text = getString(R.string.follow)
                 account_btn_follow_signout.setOnClickListener {
                     requestFollow()
@@ -150,8 +156,8 @@ class UserFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         getProfileImage()
-        getFollowing()
-        getFollower()
+        getFollowing()  // "내가" 팔로우하고있는 사람
+        getFollower()   // "나를" 팔로우하고있는 사람
     }
 
     override fun onStop() {
@@ -181,6 +187,7 @@ class UserFragment : Fragment() {
 
 
     private fun getFollowing() {
+        // 상세보기할려고하는 유저의 uid
         followingListenerRegistration = firestore.collection("users").document(uid.toString())
             .addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
                 val followDTO = documentSnapshot?.toObject(FollowDTO::class.java) ?: return@addSnapshotListener
@@ -190,11 +197,13 @@ class UserFragment : Fragment() {
 
 
     private fun getFollower() {
+        // 상세보기할려고하는 유저의 uid
         followerListenerRegistration = firestore.collection("users").document(uid.toString())
             .addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
                 val followDTO = documentSnapshot?.toObject(FollowDTO::class.java) ?: return@addSnapshotListener
                 account_tv_follower_count.text = followDTO.followerCount.toString()
 
+                // 상대 유저입장에서 팔로워 목록에 내가있으면 내가 그 사람을 팔로잉하는 중
                 if(followDTO.followers.containsKey(currentUserUid)) {
                     account_btn_follow_signout.text = getString(R.string.follow_cancle)
 
@@ -213,9 +222,11 @@ class UserFragment : Fragment() {
 
 
     private fun requestFollow() {
+        // 로그인된 사용자 uid로 document 생성
         val tsDocFollowing = firestore.collection("users").document(currentUserUid.toString())
         firestore.runTransaction { transaction ->
             var followDTO = transaction.get(tsDocFollowing).toObject(FollowDTO::class.java)
+            // 만들어진게 없다면 지금 보고있는 사용자를 팔로잉한다
             if(followDTO == null) {
                 followDTO = FollowDTO()
                 followDTO.run {
@@ -227,6 +238,7 @@ class UserFragment : Fragment() {
                 return@runTransaction
             }
 
+            // 만들어진게 있었다면
             followDTO.run {
                 if(followings.containsKey(uid.toString())) {
                     followingCount -= 1
@@ -242,6 +254,7 @@ class UserFragment : Fragment() {
 
         }
 
+        // 보고있는 유저의 uid로 접근
         val tsDocFollower = firestore.collection("users").document(uid.toString())
         firestore.runTransaction { transaction ->
             var followDTO = transaction.get(tsDocFollower).toObject(FollowDTO::class.java)
@@ -256,12 +269,12 @@ class UserFragment : Fragment() {
             }
 
             followDTO?.run {
-                if(followings.containsKey(uid.toString())) {
-                    followingCount -= 1
-                    followings.remove(uid.toString())
+                if(followers.containsKey(uid.toString())) {
+                    followerCount -= 1
+                    followers.remove(uid.toString())
                 } else {
-                    followingCount += 1
-                    followings[uid.toString()] = true
+                    followerCount += 1
+                    followers[uid.toString()] = true
                 }
                 transaction.set(tsDocFollower, this)
                 return@runTransaction
@@ -278,6 +291,8 @@ class UserFragment : Fragment() {
         alarmDTO.timestamp = System.currentTimeMillis()
 
         FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
+        val message = auth.currentUser!!.email + getString(R.string.alarm_favorite)
+        fcmPush?.sendMessage(destinationUid, "알림 메시지 입니다", message)
     }
 
 

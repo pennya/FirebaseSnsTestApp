@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.duzi.duzisnstest.FCMPush
 import com.duzi.duzisnstest.MainActivity
 import com.duzi.duzisnstest.R
 import com.duzi.duzisnstest.model.AlarmDTO
@@ -31,6 +32,7 @@ class DetailviewFragment : Fragment() {
     var user: FirebaseUser? = null
     var firestore: FirebaseFirestore? = null
     var imagesSnapshot: ListenerRegistration? = null
+    var fcmPush: FCMPush? = null
 
 
     override fun onCreateView(
@@ -39,6 +41,7 @@ class DetailviewFragment : Fragment() {
     ): View? {
         user = FirebaseAuth.getInstance().currentUser
         firestore = FirebaseFirestore.getInstance()
+        fcmPush = FCMPush()
         return inflater.inflate(R.layout.fragment_detailview, container, false)
     }
 
@@ -64,7 +67,7 @@ class DetailviewFragment : Fragment() {
             val uid = FirebaseAuth.getInstance().currentUser?.uid
             println("uid : $uid")
 
-            // pull driven 방식으로 users 컬렉션에서 uid에 해당하는 문서를 찾아온다.
+            // pull driven 방식으로 users 컬렉션에서 나의 uid에 해당하는 문서를 찾아온다.
             firestore?.collection("users")?.document(uid!!)?.get()
                 ?.addOnCompleteListener { task ->
                     if(task.isSuccessful) {
@@ -108,6 +111,9 @@ class DetailviewFragment : Fragment() {
             alarmDTO.timestamp = System.currentTimeMillis()
 
             FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
+
+            val message = user?.email + getString(R.string.alarm_favorite)
+            fcmPush?.sendMessage(destinationUid, "알림 메시지 입니다", message)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

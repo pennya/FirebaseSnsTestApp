@@ -13,6 +13,7 @@ import android.view.View
 import android.widget.Toast
 import com.duzi.duzisnstest.navigation.*
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
@@ -36,6 +37,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
         println("current timestamp = ${System.currentTimeMillis()}")
     }
+
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         setToolbarDefault()
